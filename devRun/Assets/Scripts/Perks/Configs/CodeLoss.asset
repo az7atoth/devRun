@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c775b0a01b48204689c81d7d1f8c783, type: 3}
+  m_Name: CodeLoss
+  m_EditorClassIdentifier: Assembly-CSharp::Branches.PerkConfig
+  <PerkType>k__BackingField: 1
+  <Icon>k__BackingField: {fileID: 21300000, guid: 8e97bce158f8da54bb964007a9836297, type: 3}
+  <MaxLevel>k__BackingField: 5
+  <EffectByLevel>k__BackingField: 0.05
+  <Description>k__BackingField: -5% code loss on impacts
