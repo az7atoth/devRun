@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Branches
+namespace DevRun
 {
     public class TempEffectView : MonoBehaviour
     {

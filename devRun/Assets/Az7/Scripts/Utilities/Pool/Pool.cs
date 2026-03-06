@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#define ZENJECT //comment this line if zenject not installed
+
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
@@ -13,14 +15,18 @@ namespace Az7.Utils.Pool
         private bool _isInitialized;
         private List<GameObject> _pool = new();
         private List<GameObject> _inUse = new();
+#if ZENJECT
         private DiContainer _container;
+#endif
         private bool _prefabIsPoolable;
 
+#if ZENJECT
         [Inject]
         public void Construct(DiContainer diContainer)
         {
             _container = diContainer;
         }
+#endif
 
         public GameObject Take()
         {
@@ -87,16 +93,13 @@ namespace Az7.Utils.Pool
         {
             GameObject instance;
 
-            if (_container != null)
-            {
-                instance = _container.InstantiatePrefab(Prefab, transform.position,
-                    Quaternion.identity, transform);
-            }
-            else
-            {
-                instance = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
-            }
+#if ZENJECT
+            instance = _container.InstantiatePrefab(Prefab, transform.position,
+                Quaternion.identity, transform);
+#else
 
+            instance = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
+#endif
 
             if (isPoolable)
             {

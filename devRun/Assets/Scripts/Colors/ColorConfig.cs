@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Branches
+namespace DevRun
 {
     [CreateAssetMenu(fileName = "ColorConfig", menuName = "Scriptable Objects/ColorConfig")]
     public class ColorConfig : ScriptableObject

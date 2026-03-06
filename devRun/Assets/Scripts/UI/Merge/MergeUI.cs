@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 using Az7.Utils.Pool;
 using UnityEngine.UI;
 
-namespace Branches
+namespace DevRun
 {
     public class MergeUI : UI_ViewBase
     {

@@ -27,7 +27,7 @@ namespace Az7.UI
             _isInitialized = true;
         }
 
-        public void ShowView(UI_ViewKey key)
+        public void ShowViewImmidiate(UI_ViewKey key)
         {
             if (_views.TryGetValue(key, out UI_ViewBase view) && !view.IsVisible)
             {
@@ -36,7 +36,7 @@ namespace Az7.UI
             }
         }
 
-        public void HideView(UI_ViewKey key)
+        public void HideViewImmidiate(UI_ViewKey key)
         {
             if (_views.TryGetValue(key, out UI_ViewBase view) && view.IsVisible)
             {
@@ -54,7 +54,7 @@ namespace Az7.UI
             }
             else
             {
-                Debug.Log("<color=#65D766>UI</color> View not found: " + key);
+                Debug.Log("<color=#65D766>UI</color> View not found or already visible: " + key);
                 return;
             }
         }
@@ -68,7 +68,7 @@ namespace Az7.UI
             }
             else
             {
-                Debug.Log("<color=#65D766>UI</color> View not found: " + key);
+                Debug.Log("<color=#65D766>UI</color> View not found or already visible: " + key);
                 return;
             }
         }
@@ -82,7 +82,7 @@ namespace Az7.UI
             }
             else
             {
-                Debug.Log("<color=#65D766>UI</color> View not found: " + key);
+                Debug.Log("<color=#65D766>UI</color> View not found or already invisible: " + key);
                 return;
             }
         }
@@ -96,7 +96,7 @@ namespace Az7.UI
             }
             else
             {
-                Debug.Log("<color=#65D766>UI</color> View not found: " + key);
+                Debug.Log("<color=#65D766>UI</color> View not found or already invisible: " + key);
                 return;
             }
         }

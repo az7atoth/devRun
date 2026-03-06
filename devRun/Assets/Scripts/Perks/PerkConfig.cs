@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Branches
+namespace DevRun
 {
     [CreateAssetMenu(fileName = "PerkConfig", menuName = "Scriptable Objects/PerkConfig")]
     public class PerkConfig : ScriptableObject

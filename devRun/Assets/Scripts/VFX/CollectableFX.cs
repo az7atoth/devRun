@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 using System.Collections.Generic;
 
-namespace Branches
+namespace DevRun
 {
     public class CollectableFX : MonoBehaviour
     {

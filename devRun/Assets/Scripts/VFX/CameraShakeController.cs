@@ -2,7 +2,7 @@ using Az7.Utils.Timers;
 using Unity.Cinemachine;
 using UnityEngine;
 
-namespace Branches
+namespace DevRun
 {
     public class CameraShakeController : MonoBehaviour
     {

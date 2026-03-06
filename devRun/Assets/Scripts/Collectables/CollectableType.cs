@@ -1,4 +1,4 @@
-namespace Branches
+namespace DevRun
 {
     public enum CollectableType
     {
@@ -12,5 +12,6 @@ namespace Branches
         ControlVirus = 7,
         TransitionSpeedVirus = 8,
         MergeLockVirus = 9,
+        None = 10,
     }
 }

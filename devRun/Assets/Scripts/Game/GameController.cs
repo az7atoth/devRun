@@ -4,8 +4,9 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Playables;
 using UniRx;
+using Zenject;
 
-namespace Branches
+namespace DevRun
 {
     public class GameController : MonoBehaviour
     {
@@ -17,6 +18,16 @@ namespace Branches
         [SerializeField] private PlayableDirector _endGameDirector;
         [SerializeField] private AudioSource _music;
         [SerializeField] private AudioSource _gameStart;
+
+        private UI_Controller _uI_Controller;
+        private ICollectablesSpawner _collectablesSpawner;
+
+        [Inject]
+        public void Construct(UI_Controller uI_Controller, ICollectablesSpawner spawner)
+        {
+            _uI_Controller = uI_Controller;
+            _collectablesSpawner = spawner;
+        }
 
         public void Initialize()
         {
@@ -40,17 +51,17 @@ namespace Branches
         {
             _gameStart.Play();
 
-            UI_ControllerSingle.Instance.HideView(UI_ViewKey.Main);
+            _uI_Controller.HideViewImmidiate(UI_ViewKey.Main);
 
             _music.Play();
 
             await UniTask.WhenAll(
-                UI_ControllerSingle.Instance.ShowViewAsync(UI_ViewKey.Game, .2f, token),
+                _uI_Controller.ShowViewAsync(UI_ViewKey.Game, .2f, token),
                 GameSpeedController.Instance.SetRatioAsync(1f, .5f, token),
                 MixingCameraController.Instance.ToggleCameraAsync(true, .5f, token)
                 );
 
-            CollectablesSpawner.Instance.StartSpawning();
+            _collectablesSpawner.StartSpawning();
             Blackboard.GameState.Value = GameState.Running;
 
             PlayerController.Instance.MoveRight(true);
@@ -63,8 +74,8 @@ namespace Branches
 
             CurtainSingle.Instance.ShowImmidiate();
 
-            UI_ControllerSingle.Instance.HideAll();
-            UI_ControllerSingle.Instance.ShowView(UI_ViewKey.Main);
+            _uI_Controller.HideAll();
+            _uI_Controller.ShowViewImmidiate(UI_ViewKey.Main);
 
             PlayerController.Instance.Setup();
             GameSpeedController.Instance.Setup();
@@ -72,7 +83,7 @@ namespace Branches
             TempEffectsController.Instance.ClearAll();
             StreakController.Instance.Clear();
             PerkController.Instance.Clear();
-            CollectablesSpawner.Instance.StopAndClear();
+            _collectablesSpawner.StopAndClear();
             BranchController.Instance.DeactivateAll();
 
             //core

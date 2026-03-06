@@ -9,18 +9,18 @@ namespace Az7.UI
         public abstract UI_ViewKey ViewKey { get; }
         public bool IsVisible { get; protected set; }
 
-        [field: SerializeField] public float DefaultAnimationTime = 1f;
+        [field: SerializeField] public float DefaultAnimationTime = .2f;
         [field: SerializeField] public bool IgnoreHideAll { get; set; } = false;
         [SerializeField] protected CanvasGroup _canvasGroup;
 
-        public virtual void ShowImmidiate()
+        public void ShowImmidiate()
         {
             _canvasGroup.blocksRaycasts = true;
             _canvasGroup.alpha = 1f;
             IsVisible = true;
         }
 
-        public virtual void HideImmidiate()
+        public void HideImmidiate()
         {
             _canvasGroup.blocksRaycasts = false;
             _canvasGroup.alpha = 0f;
@@ -29,38 +29,38 @@ namespace Az7.UI
 
         public virtual async UniTask ShowAsync(CancellationToken token)
         {
-            await CurtainAnimationAsync(true, DefaultAnimationTime, token);
+            await ViewAnimationAsync(true, DefaultAnimationTime, token);
         }
 
         public virtual async UniTask ShowAsync(float animationTime, CancellationToken token)
         {
-            await CurtainAnimationAsync(true, animationTime, token);
+            await ViewAnimationAsync(true, animationTime, token);
         }
 
         public virtual async UniTask HideAsync(CancellationToken token)
         {
-            await CurtainAnimationAsync(false, DefaultAnimationTime, token);
+            await ViewAnimationAsync(false, DefaultAnimationTime, token);
         }
 
         public virtual async UniTask HideAsync(float animationTime, CancellationToken token)
         {
-            await CurtainAnimationAsync(false, animationTime, token);
+            await ViewAnimationAsync(false, animationTime, token);
         }
 
-        private async UniTask CurtainAnimationAsync(bool show, float animationTime, CancellationToken token)
+        private async UniTask ViewAnimationAsync(bool show, float animationTime, CancellationToken token)
         {
-            if (show)
-            {
-                _canvasGroup.blocksRaycasts = true;
-                IsVisible = true;
-            }
-
             var startValue = _canvasGroup.alpha;
             var endValue = show ? 1f : 0f;
 
             if (endValue == startValue)
             {
                 return;
+            }
+
+            if (!show)
+            {
+                _canvasGroup.blocksRaycasts = false;
+                IsVisible = false;
             }
 
             if (animationTime < 0f)
@@ -82,10 +82,10 @@ namespace Az7.UI
                 if (token.IsCancellationRequested) return;
             }
 
-            if (!show)
+            if (show)
             {
-                _canvasGroup.blocksRaycasts = false;
-                IsVisible = false;
+                _canvasGroup.blocksRaycasts = true;
+                IsVisible = true;
             }
         }
     }

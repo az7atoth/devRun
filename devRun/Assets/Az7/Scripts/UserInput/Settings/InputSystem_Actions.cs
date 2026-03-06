@@ -1108,6 +1108,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GodModeToggle"",
+                    ""type"": ""Button"",
+                    ""id"": ""1ae572b3-065c-442e-a4b7-54aa806e795c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1165,6 +1174,39 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Action"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""55195798-ce55-4226-86c8-6fb4dd22225d"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GodModeToggle"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""5285034e-9773-447b-a059-5cff6af7c05b"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GodModeToggle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""19a489e8-4b60-4610-bb78-8a8cd6101f5f"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""GodModeToggle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -1260,6 +1302,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Branches_MoveLeft = m_Branches.FindAction("MoveLeft", throwIfNotFound: true);
         m_Branches_MoveRight = m_Branches.FindAction("MoveRight", throwIfNotFound: true);
         m_Branches_Action = m_Branches.FindAction("Action", throwIfNotFound: true);
+        m_Branches_GodModeToggle = m_Branches.FindAction("GodModeToggle", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
@@ -1724,6 +1767,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Branches_MoveLeft;
     private readonly InputAction m_Branches_MoveRight;
     private readonly InputAction m_Branches_Action;
+    private readonly InputAction m_Branches_GodModeToggle;
     /// <summary>
     /// Provides access to input actions defined in input action map "Branches".
     /// </summary>
@@ -1747,6 +1791,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Branches/Action".
         /// </summary>
         public InputAction @Action => m_Wrapper.m_Branches_Action;
+        /// <summary>
+        /// Provides access to the underlying input action "Branches/GodModeToggle".
+        /// </summary>
+        public InputAction @GodModeToggle => m_Wrapper.m_Branches_GodModeToggle;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1782,6 +1830,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Action.started += instance.OnAction;
             @Action.performed += instance.OnAction;
             @Action.canceled += instance.OnAction;
+            @GodModeToggle.started += instance.OnGodModeToggle;
+            @GodModeToggle.performed += instance.OnGodModeToggle;
+            @GodModeToggle.canceled += instance.OnGodModeToggle;
         }
 
         /// <summary>
@@ -1802,6 +1853,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Action.started -= instance.OnAction;
             @Action.performed -= instance.OnAction;
             @Action.canceled -= instance.OnAction;
+            @GodModeToggle.started -= instance.OnGodModeToggle;
+            @GodModeToggle.performed -= instance.OnGodModeToggle;
+            @GodModeToggle.canceled -= instance.OnGodModeToggle;
         }
 
         /// <summary>
@@ -2077,5 +2131,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "GodModeToggle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGodModeToggle(InputAction.CallbackContext context);
     }
 }

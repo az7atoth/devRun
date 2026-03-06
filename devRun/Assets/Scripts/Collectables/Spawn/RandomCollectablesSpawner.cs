@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-namespace Branches
+namespace DevRun
 {
-    public class CollectablesSpawner : MonoBehaviour
+    public class RandomCollectablesSpawner : MonoBehaviour, ICollectablesSpawner
     {
-        public static CollectablesSpawner Instance { get; private set; }
+        //public static CollectablesSpawner Instance { get; private set; }
 
         [SerializeField] private Pool _pool;
 
@@ -316,14 +316,14 @@ namespace Branches
 
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            //if (Instance == null)
+            //{
+            //    Instance = this;
+            //}
+            //else
+            //{
+            //    Destroy(gameObject);
+            //}
 
             Collectable.OnDeactivate.Subscribe(collectable =>
             {

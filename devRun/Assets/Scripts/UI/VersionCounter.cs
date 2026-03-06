@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UniRx;
 
-namespace Branches
+namespace DevRun
 {
     public class VersionCounter : MonoBehaviour
     {

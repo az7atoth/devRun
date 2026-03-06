@@ -7,7 +7,7 @@ using System.Threading;
 using Az7.Utils.Pool;
 using System.Threading.Tasks;
 
-namespace Branches
+namespace DevRun
 {
     public class PlayerController : MonoBehaviour
     {
@@ -18,6 +18,7 @@ namespace Branches
         public bool SwapControls { get; set; }
         public bool IsShielded { get; set; }
         public bool MergeLock { get; set; }
+        public bool GodMode { get; set; }
 
         [SerializeField] private Pool _textPool;
 
@@ -259,7 +260,7 @@ namespace Branches
                     switch (collectable.Type)
                     {
                         case CollectableType.Bug:
-                            if (IsShielded) break;
+                            if (IsShielded || GodMode) break;
                             Blackboard.BugsCollected.Value++;
                             OnNegativeEffect(collectable);
                             break;
@@ -281,7 +282,7 @@ namespace Branches
                             break;
 
                         case CollectableType.Death:
-                            if (IsShielded) break;
+                            if (IsShielded || GodMode) break;
                             CameraShakeController.Instance.DoShake(0);
                             StreakController.Instance.Clear();
                             GameController.Instance.EndGame();

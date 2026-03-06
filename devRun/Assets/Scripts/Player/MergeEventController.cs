@@ -2,9 +2,10 @@ using Az7.UI;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using UnityEngine;
+using Zenject;
 using Timer = Az7.Utils.Timers.Timer;
 
-namespace Branches
+namespace DevRun
 {
     public class MergeEventController : MonoBehaviour
     {
@@ -19,16 +20,26 @@ namespace Branches
         private Timer _transitionTimer = new();
         private Branch _branch;
 
+        private UI_Controller _uI_Controller;
+        private ICollectablesSpawner _collectablesSpawner;
+
+        [Inject]
+        public void Construct(UI_Controller uI_Controller, ICollectablesSpawner collectablesSpawner)
+        {
+            _uI_Controller = uI_Controller;
+            _collectablesSpawner = collectablesSpawner;
+        }
+
         public void Activate()
         {
             if (_mergeUI == null)
             {
-                _mergeUI = UI_ControllerSingle.Instance.GetView(UI_ViewKey.Merge) as MergeUI;
+                _mergeUI = _uI_Controller.GetView(UI_ViewKey.Merge) as MergeUI;
             }
 
             if (_chooseUI == null)
             {
-                _chooseUI = UI_ControllerSingle.Instance.GetView(UI_ViewKey.PerkChoose) as PerkChooseUI;
+                _chooseUI = _uI_Controller.GetView(UI_ViewKey.PerkChoose) as PerkChooseUI;
             }
 
             _cts = new();
@@ -44,11 +55,11 @@ namespace Branches
         {
             _mergeUI.Prepare();
 
-            CollectablesSpawner.Instance.HideAll(_transitionDuration);
+            _collectablesSpawner.HideAll(_transitionDuration);
 
             await UniTask.WhenAll(
                 GameSpeedController.Instance.SetRatioAsync(.1f, _transitionDuration, token),
-                UI_ControllerSingle.Instance.ShowViewAsync(UI_ViewKey.Merge, _transitionDuration, token),
+                _uI_Controller.ShowViewAsync(UI_ViewKey.Merge, _transitionDuration, token),
                 MixingCameraController.Instance.ToggleCameraAsync(false, _transitionDuration, token),
                 AnimateBranchAsync(_transitionDuration, token)
                 );
@@ -107,7 +118,7 @@ namespace Branches
                 _chooseUI.HideAsync(.2f, token).Forget();
             }
 
-            CollectablesSpawner.Instance.ShowAll(_transitionDuration * 1.2f);
+            _collectablesSpawner.ShowAll(_transitionDuration * 1.2f);
 
             await UniTask.WhenAll(
                 _mergeUI.HideAsync(_transitionDuration, token),

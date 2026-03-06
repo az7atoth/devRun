@@ -7,7 +7,7 @@ using UniRx;
 using UnityEngine;
 using Timer = Az7.Utils.Timers.Timer;
 
-namespace Branches
+namespace DevRun
 {
     public class Collectable : MonoBehaviour
     {
