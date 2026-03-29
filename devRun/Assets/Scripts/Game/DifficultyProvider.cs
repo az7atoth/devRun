@@ -37,13 +37,13 @@ namespace DevRun
                 Destroy(gameObject);
             }
 
-            Blackboard.Version.SkipLatestValueOnSubscribe().Subscribe(value =>
+            Blackboard.Level.SkipLatestValueOnSubscribe().Subscribe(value =>
             {
                 Blackboard.Difficulty.Value = GetDifficulty(value);
                 Blackboard.MergeEventIterations.Value = GetMergeEventIterations(value);
                 Debug.Log("Difficulty: " + Blackboard.Difficulty.Value);
 
-                if (Blackboard.Version.Value >= Mathf.RoundToInt(_maxDifficultyLevel * .5f))
+                if (Blackboard.Level.Value >= Mathf.RoundToInt(_maxDifficultyLevel * .5f))
                 {
                     Blackboard.MaxLanesCount.Value = 4;
                 }

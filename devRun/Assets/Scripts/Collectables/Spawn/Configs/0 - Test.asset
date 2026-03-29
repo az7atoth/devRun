@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97dab2640a3c5b4408ccc7a6d4599adb, type: 3}
+  m_Name: 0 - Test
+  m_EditorClassIdentifier: Assembly-CSharp::PatternBasedSpawnerConfig
+  _patternConfigs:
+  - {fileID: 11400000, guid: db47041613000224b9e52a5f79bb534e, type: 2}
+  - {fileID: 11400000, guid: c5adc21a37c7ab74f81728bc617e4285, type: 2}
+  - {fileID: 11400000, guid: d08d2317e0d42084495726b08d242c9d, type: 2}
+  - {fileID: 11400000, guid: 0069738b997c8a847884c5b8f5538e91, type: 2}
+  - {fileID: 11400000, guid: 6b764982cc9982542bbd41afa73ed2f7, type: 2}
+  - {fileID: 11400000, guid: 2dba0c1b4104ce64588474d37948fb47, type: 2}
+  - {fileID: 11400000, guid: aa225e289e85651489da1a046a83d72b, type: 2}
+  - {fileID: 11400000, guid: 09c9be5a9a754d448980d8d1c3784437, type: 2}
+  - {fileID: 11400000, guid: 2ec95dd31e16e4843bb78ae7cfd9ad48, type: 2}
+  - {fileID: 11400000, guid: 44e3a75608da28941a0c463a43018343, type: 2}
+  - {fileID: 11400000, guid: 2562d0aa2cf9def408a9bb8f048bba12, type: 2}

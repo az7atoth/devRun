@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97dab2640a3c5b4408ccc7a6d4599adb, type: 3}
+  m_Name: 3 - LateGame
+  m_EditorClassIdentifier: Assembly-CSharp::PatternBasedSpawnerConfig
+  _patternConfigs:
+  - {fileID: 11400000, guid: fc9476136b1323740a2e154b45dd65c9, type: 2}
+  - {fileID: 11400000, guid: 645f3cd1f941043479120f20a98a2216, type: 2}
+  - {fileID: 11400000, guid: 2562d0aa2cf9def408a9bb8f048bba12, type: 2}
+  - {fileID: 11400000, guid: 34e967aa4cd94744e9500b516a69330b, type: 2}
+  - {fileID: 11400000, guid: e625fbee484985a4c9ca75aeb4099fb7, type: 2}
+  - {fileID: 11400000, guid: 8a0de76f44d5b1a4b93fda5db3ac5ef9, type: 2}
+  - {fileID: 11400000, guid: d3379c6e5fd7f824ab94945487775e98, type: 2}
+  - {fileID: 11400000, guid: 25189edd56ea5704ea9521bf78e7b322, type: 2}
+  - {fileID: 11400000, guid: f321ed1f34f60104999ff032961d96ef, type: 2}
+  - {fileID: 11400000, guid: 44e3a75608da28941a0c463a43018343, type: 2}
+  - {fileID: 11400000, guid: 06d846735949b5e4fb8b531454650b49, type: 2}
+  - {fileID: 11400000, guid: 6d7108f2073b30f428e02dd829273aac, type: 2}

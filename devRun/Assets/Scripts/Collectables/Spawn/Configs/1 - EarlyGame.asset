@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97dab2640a3c5b4408ccc7a6d4599adb, type: 3}
-  m_Name: EarlyGame
+  m_Name: 1 - EarlyGame
   m_EditorClassIdentifier: Assembly-CSharp::PatternBasedSpawnerConfig
   _patternConfigs:
   - {fileID: 11400000, guid: db47041613000224b9e52a5f79bb534e, type: 2}
@@ -20,4 +20,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6b764982cc9982542bbd41afa73ed2f7, type: 2}
   - {fileID: 11400000, guid: 0e5183452ccada641b6ac43c55d74c43, type: 2}
   - {fileID: 11400000, guid: 2dba0c1b4104ce64588474d37948fb47, type: 2}
-  - {fileID: 11400000, guid: fd4f25dca60b39e4280bf56978f77ce1, type: 2}

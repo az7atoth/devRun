@@ -5,6 +5,7 @@ namespace DevRun
 {
     public class Branch : MonoBehaviour
     {
+        public NodeView StartNode => _startNode;
         public Vector3 StartPosition { get => _lineRenderer.GetPosition(0); set => _lineRenderer.SetPosition(0, value); }
         public Vector3 KneePosition { get => _lineRenderer.GetPosition(1); set => _lineRenderer.SetPosition(1, value); }
         public Vector3 EndPosition { get => _lineRenderer.GetPosition(2); set => _lineRenderer.SetPosition(2, value); }

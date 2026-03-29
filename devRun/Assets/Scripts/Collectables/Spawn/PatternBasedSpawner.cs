@@ -26,6 +26,7 @@ public class PatternBasedSpawner : MonoBehaviour, ICollectablesSpawner
     private bool _isSpawning;
     private float _spawnTimer;
     private int _currentRowCounter;
+    private int _currentPatternRowsCount;
     private string _currentPattern;
     private List<Collectable> _activeCollectables = new(30);
     private List<Collectable> _inactiveCollectables = new(10);
@@ -38,6 +39,7 @@ public class PatternBasedSpawner : MonoBehaviour, ICollectablesSpawner
 
     public void StartSpawning()
     {
+        _patternProvider.DefineGamePhase(Blackboard.Level.Value);
         _isSpawning = true;
         _spawnTimer = 0f;
         _currentRowCounter = 0;
@@ -110,7 +112,7 @@ public class PatternBasedSpawner : MonoBehaviour, ICollectablesSpawner
         foreach (var collectable in _activeCollectables)
         {
             collectable.transform.position += Vector3.down
-                * Time.deltaTime
+                * Time.fixedDeltaTime
                 * Blackboard.MovementSpeed.Value
                 * Blackboard.GameSpeedRatio.Value
                 * Blackboard.GameSpeedRatioModifier.Value;
@@ -118,6 +120,12 @@ public class PatternBasedSpawner : MonoBehaviour, ICollectablesSpawner
             if (collectable.transform.position.y + .5f < PlayerController.Instance.transform.position.y)
             {
                 collectable.HideByDistance();
+
+                //if (collectable.Type == CollectableType.Code && collectable.IsActive)
+                //{
+                //    collectable.IsActive = false;
+                //    StreakController.Instance.Clear();
+                //}
             }
 
             if (collectable.transform.position.y < PositionProvider.Instance.ScreenBottom.position.y)
@@ -132,7 +140,8 @@ public class PatternBasedSpawner : MonoBehaviour, ICollectablesSpawner
         if (_currentRowCounter == 0)
         {
             _currentPattern = _patternProvider.GetPattern(LANES_COUNT); //TODO lanes count
-            Debug.Log($"Current pattern changed to: {_currentPattern}");
+            _currentPatternRowsCount = _currentPattern.Length / LANES_COUNT;
+            //ebug.Log($"Current pattern changed to: {_currentPattern}");
         }
 
         //Debug.Log($"Row: {_currentRowCounter}");
@@ -197,12 +206,12 @@ public class PatternBasedSpawner : MonoBehaviour, ICollectablesSpawner
         else
         if (char.Equals(c, BUFF_CHAR))
         {
-            return CollectableType.Code; //TODO temp
+            return CollectableType.None; //TODO temp
         }
         else
         if (char.Equals(c, DEBUFF_CHAR))
         {
-            return CollectableType.Bug; //TODO temp
+            return CollectableType.None; //TODO temp
         }
         else
         {

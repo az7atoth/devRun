@@ -130,6 +130,7 @@ public class GameSpeedController : MonoBehaviour
         Blackboard.Difficulty.Subscribe(value =>
         {
             Blackboard.MovementSpeed.Value = _speedCurve.Evaluate(value);
+            Debug.Log($"Set speed to: {Blackboard.MovementSpeed.Value}");
         }).AddTo(this);
     }
 

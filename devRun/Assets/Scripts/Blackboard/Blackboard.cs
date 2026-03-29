@@ -8,7 +8,7 @@ namespace DevRun
         //core
         public static ReactiveProperty<GameState> GameState { get; private set; } = new();
         public static ReactiveProperty<float> Difficulty { get; private set; } = new();
-        public static ReactiveProperty<int> Version { get; private set; } = new(); //level
+        public static ReactiveProperty<int> Level { get; private set; } = new();
         public static ReactiveProperty<int> MaxLanesCount { get; private set; } = new(3);
 
         //speed
@@ -18,11 +18,9 @@ namespace DevRun
 
         //collectables
         public static ReactiveProperty<int> BugsCollected { get; private set; } = new();
-        public static ReactiveProperty<int> CodeCollected { get; private set; } = new();
-        public static ReactiveProperty<int> CodeRequested { get; private set; } = new();
-        public static ReactiveProperty<int> CodeStored { get; private set; } = new();
-        public static ReactiveProperty<int> StreakCount { get; private set; } = new();
-        public static ReactiveProperty<int> StreakModifier { get; private set; } = new();
+//        public static ReactiveProperty<int> CodeCollected { get; private set; } = new();
+//        public static ReactiveProperty<int> CodeRequested { get; private set; } = new();
+//        public static ReactiveProperty<int> CodeStored { get; private set; } = new();
 
         //player stats
         public static ReactiveProperty<float> TransitionSpeed { get; private set; } = new();
@@ -42,5 +40,7 @@ namespace DevRun
         public static ReactiveCommand OnVersionUpgrade { get; private set; } = new();
         public static ReactiveCommand OnMergeCorrect { get; private set; } = new();
 
+        //DEBUG
+        public static int ActionsCounter { get; set; }
     }
 }

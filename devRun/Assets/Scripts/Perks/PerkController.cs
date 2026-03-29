@@ -79,7 +79,7 @@ namespace DevRun
                     Blackboard.MergeEventTimeModifier.Value = 1f + (ActivePerks[config.PerkType] * config.EffectByLevel);
                     break;
                 case PerkType.LessCodeLoss:
-                    Blackboard.CodeLossModifier.Value = .5f - (ActivePerks[config.PerkType] * config.EffectByLevel);
+                    Blackboard.CodeLossModifier.Value = .12f - (ActivePerks[config.PerkType] * config.EffectByLevel);
                     break;
                 case PerkType.BugLimit:
                     Blackboard.BugLimit.Value = 3 + (ActivePerks[config.PerkType] * Mathf.RoundToInt(config.EffectByLevel));

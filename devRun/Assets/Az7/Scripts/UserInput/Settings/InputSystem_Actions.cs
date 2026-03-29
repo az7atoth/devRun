@@ -1176,6 +1176,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
+                    ""name"": """",
+                    ""id"": ""9d3dbc8a-5a63-42bb-b6cb-fdaca9d46feb"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
                     ""name"": ""One Modifier"",
                     ""id"": ""55195798-ce55-4226-86c8-6fb4dd22225d"",
                     ""path"": ""OneModifier"",

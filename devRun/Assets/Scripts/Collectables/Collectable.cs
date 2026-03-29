@@ -19,7 +19,7 @@ namespace DevRun
         public CollectableType Type { get; private set; }
         public BranchesColorIndex ColorIndex { get; private set; }
 
-        public bool IsCollected { get; private set; }
+        public bool IsActive { get; set; }
 
         [SerializeField] private SpriteRenderer _background;
         [SerializeField] private Collider2D _collider;
@@ -42,7 +42,7 @@ namespace DevRun
             }
 
             Type = type;
-            IsCollected = false;
+            IsActive = true;
             gameObject.SetActive(true);
 
             _hidedByDistance = false;
@@ -70,8 +70,8 @@ namespace DevRun
 
         public void Collect()
         {
+            IsActive = false;
             _onCollected.Execute(this);
-            IsCollected = true;
             Deactivate(true);
         }
 

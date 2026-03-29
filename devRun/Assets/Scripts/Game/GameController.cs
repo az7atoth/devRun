@@ -21,12 +21,20 @@ namespace DevRun
 
         private UI_Controller _uI_Controller;
         private ICollectablesSpawner _collectablesSpawner;
+        private IScoreCounter _scoreCounter;
+
+        private float _startTime;
 
         [Inject]
-        public void Construct(UI_Controller uI_Controller, ICollectablesSpawner spawner)
+        public void Construct(
+            UI_Controller uI_Controller,
+            ICollectablesSpawner spawner,
+            IScoreCounter scoreCounter
+            )
         {
             _uI_Controller = uI_Controller;
             _collectablesSpawner = spawner;
+            _scoreCounter = scoreCounter;
         }
 
         public void Initialize()
@@ -45,15 +53,18 @@ namespace DevRun
         {
             EndGameAsync(destroyCancellationToken).Forget();
             _music.Stop();
+
+            var sessionTime = Time.unscaledTime - _startTime;
+            Debug.Log($"Session time: {sessionTime}; Actions: {Blackboard.ActionsCounter}");
         }
 
         private async UniTaskVoid StartGameAsync(CancellationToken token)
         {
-            _gameStart.Play();
+            _gameStart.Play(); //play start sfx
 
             _uI_Controller.HideViewImmidiate(UI_ViewKey.Main);
 
-            _music.Play();
+            _music.Play(); //play music
 
             await UniTask.WhenAll(
                 _uI_Controller.ShowViewAsync(UI_ViewKey.Game, .2f, token),
@@ -66,6 +77,9 @@ namespace DevRun
 
             PlayerController.Instance.MoveRight(true);
             PlayerController.Instance.MoveRight(false);
+
+            _startTime = Time.unscaledTime;
+            Blackboard.ActionsCounter = 0;
         }
 
         private async UniTaskVoid PrepareNewGameAsync(CancellationToken token)
@@ -81,19 +95,21 @@ namespace DevRun
             GameSpeedController.Instance.Setup();
             MixingCameraController.Instance.ToggleCameraImmidiate(false);
             TempEffectsController.Instance.ClearAll();
-            StreakController.Instance.Clear();
             PerkController.Instance.Clear();
             _collectablesSpawner.StopAndClear();
             BranchController.Instance.DeactivateAll();
 
             //core
-            Blackboard.Version.Value = startLevel;
+            Blackboard.Level.Value = startLevel;
             Blackboard.MaxLanesCount.Value = 3;
 
             //code
             Blackboard.BugsCollected.Value = 0;
-            Blackboard.CodeCollected.Value = 0;
-            Blackboard.CodeStored.Value = 0;
+            _scoreCounter.ClearCollected();
+            _scoreCounter.ClearStored();
+            _scoreCounter.UpdateRequestedScore(Blackboard.Level.Value);
+            //Blackboard.CodeCollected.Value = 0;
+            //Blackboard.CodeStored.Value = 0;
             //required is calculated
 
             //stats
@@ -103,7 +119,7 @@ namespace DevRun
             Blackboard.MergeEventTimeModifier.Value = 1f;
             Blackboard.BuffTimeModifier.Value = 1f;
             Blackboard.DebuffTimeModifier.Value = 1f;
-            Blackboard.CodeLossModifier.Value = .5f;
+            Blackboard.CodeLossModifier.Value = .12f;
             Blackboard.BugLimit.Value = 3;
 
             Blackboard.GameSpeedRatio.Value = 0f;

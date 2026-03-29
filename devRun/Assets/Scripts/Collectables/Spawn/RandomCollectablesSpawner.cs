@@ -243,7 +243,7 @@ namespace DevRun
                 {
                     rndVal = Random.value;
 
-                    if (rndVal < .05f && Blackboard.Version.Value > 1)
+                    if (rndVal < .05f && Blackboard.Level.Value > 1)
                     {
                         result = CollectableType.Fix;
 

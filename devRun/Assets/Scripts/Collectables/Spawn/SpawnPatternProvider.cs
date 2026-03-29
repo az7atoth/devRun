@@ -19,6 +19,7 @@ public class SpawnPatternProvider : MonoBehaviour, IInitializable
     private SpawnPatternData[] _midPatterns;
     private SpawnPatternData[] _latePatterns;
 
+    private int _lastPatternId;
     private StringBuilder _sb = new StringBuilder(25);
 
     public void Initialize()
@@ -27,7 +28,8 @@ public class SpawnPatternProvider : MonoBehaviour, IInitializable
         _midPatterns = ProcessConfig(_midGameConfig);
         _latePatterns = ProcessConfig(_lateGameConfig);
 
-        Blackboard.Version.Subscribe(version => DefineSpawnPattern(version)).AddTo(this); //TODO
+        Blackboard.Level.SkipLatestValueOnSubscribe()
+            .Subscribe(version => DefineGamePhase(version)).AddTo(this); //TODO
     }
 
     public string GetPattern(int lineLength)
@@ -50,6 +52,17 @@ public class SpawnPatternProvider : MonoBehaviour, IInitializable
         }
 
         var rnd = Random.Range(0, patternsPool.Length);
+
+        if (patternsPool.Length > 1)
+        {
+            while (rnd == _lastPatternId)
+            {
+                rnd = Random.Range(0, patternsPool.Length);
+            }
+        }
+
+        _lastPatternId = rnd;
+
         var pattern = patternsPool[rnd];
 
         _sb.Clear();
@@ -78,13 +91,13 @@ public class SpawnPatternProvider : MonoBehaviour, IInitializable
         public string[] Lines;
     }
 
-    private void DefineSpawnPattern(int version)
+    public void DefineGamePhase(int level)
     {
-        if (version < _midGameLevel)
+        if (level < _midGameLevel)
         {
             _currentPhase = GamePhase.Early;
         }
-        if (version >= _midGameLevel && version < _lateGameLevel)
+        else if (level >= _midGameLevel && level < _lateGameLevel)
         {
             _currentPhase = GamePhase.Middle;
         }

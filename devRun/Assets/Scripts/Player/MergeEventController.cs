@@ -22,12 +22,20 @@ namespace DevRun
 
         private UI_Controller _uI_Controller;
         private ICollectablesSpawner _collectablesSpawner;
+        private IScoreCounter _scoreCounter;
+        private IScoreProvider _scoreProvider;
 
         [Inject]
-        public void Construct(UI_Controller uI_Controller, ICollectablesSpawner collectablesSpawner)
+        public void Construct(
+            UI_Controller uI_Controller,
+            ICollectablesSpawner collectablesSpawner,
+            IScoreCounter scoreCounter,
+            IScoreProvider scoreProvider)
         {
             _uI_Controller = uI_Controller;
             _collectablesSpawner = collectablesSpawner;
+            _scoreCounter = scoreCounter;
+            _scoreProvider = scoreProvider;
         }
 
         public void Activate()
@@ -86,23 +94,25 @@ namespace DevRun
 
             _mergeUI.Deactivate();
 
-            //TODO move to handler
+            //TODO
             if (_mergeUI.EventResult)
             {
-                Blackboard.CodeStored.Value += Blackboard.CodeCollected.Value;
-                Blackboard.CodeCollected.Value = 0;
+                _scoreCounter.CollectedToStored();
             }
             else
             {
-                Blackboard.CodeCollected.Value = 0;
+                _scoreCounter.ClearCollected();
             }
 
-            if (Blackboard.CodeStored.Value >= Blackboard.CodeRequested.Value)
+            if (_scoreProvider.ScoreStored.Value >= _scoreProvider.ScoreRequested.Value)
             {
                 Blackboard.OnVersionUpgrade.Execute();
 
-                Blackboard.Version.Value++;
-                Blackboard.CodeStored.Value = 0;
+                Blackboard.Level.Value++;
+
+                _scoreCounter.ClearStored();
+                _scoreCounter.UpdateRequestedScore(Blackboard.Level.Value);
+                //Blackboard.CodeStored.Value = 0;
 
                 Blackboard.GameSpeedRatio.Value = 0f;
 
@@ -117,6 +127,7 @@ namespace DevRun
 
                 _chooseUI.HideAsync(.2f, token).Forget();
             }
+            //----
 
             _collectablesSpawner.ShowAll(_transitionDuration * 1.2f);
 

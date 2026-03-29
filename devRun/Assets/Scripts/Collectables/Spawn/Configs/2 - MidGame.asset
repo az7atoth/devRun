@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97dab2640a3c5b4408ccc7a6d4599adb, type: 3}
+  m_Name: 2 - MidGame
+  m_EditorClassIdentifier: Assembly-CSharp::PatternBasedSpawnerConfig
+  _patternConfigs:
+  - {fileID: 11400000, guid: d08d2317e0d42084495726b08d242c9d, type: 2}
+  - {fileID: 11400000, guid: 67e3f4a2e04017a4295175a049381583, type: 2}
+  - {fileID: 11400000, guid: 2dba0c1b4104ce64588474d37948fb47, type: 2}
+  - {fileID: 11400000, guid: fc9476136b1323740a2e154b45dd65c9, type: 2}
+  - {fileID: 11400000, guid: 645f3cd1f941043479120f20a98a2216, type: 2}
+  - {fileID: 11400000, guid: 8fa9543f1be54fa47960343a25627f1c, type: 2}
+  - {fileID: 11400000, guid: 2ec95dd31e16e4843bb78ae7cfd9ad48, type: 2}
+  - {fileID: 11400000, guid: e683cee4182ec174c83f56adca72fd2f, type: 2}
+  - {fileID: 11400000, guid: 2562d0aa2cf9def408a9bb8f048bba12, type: 2}
+  - {fileID: 11400000, guid: 413152c321fbef64396a07c2cfd17945, type: 2}
+  - {fileID: 11400000, guid: 34e967aa4cd94744e9500b516a69330b, type: 2}
+  - {fileID: 11400000, guid: 617e65c3f35a1e64e933f2de81fae7a0, type: 2}

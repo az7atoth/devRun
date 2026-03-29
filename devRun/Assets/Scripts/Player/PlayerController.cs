@@ -5,7 +5,8 @@ using UniRx;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using Az7.Utils.Pool;
-using System.Threading.Tasks;
+using Zenject;
+using System;
 
 namespace DevRun
 {
@@ -20,12 +21,24 @@ namespace DevRun
         public bool MergeLock { get; set; }
         public bool GodMode { get; set; }
 
+        [SerializeField] private NodeView _nodeView;
         [SerializeField] private Pool _textPool;
+
+        private IScoreProvider _scoreProvider;
+        private IScoreCounter _scoreCounter;
 
         private bool _isInitialized;
         private Branch _currentBranch;
         private CancellationTokenSource _cts;
         private TransitionDirection _transitionDirection;
+        private IDisposable _onCollect;
+
+        [Inject]
+        public void Construct(IScoreProvider scoreProvider, IScoreCounter scoreCounter)
+        {
+            _scoreProvider = scoreProvider;
+            _scoreCounter = scoreCounter;
+        }
 
         public void Initialize()
         {
@@ -34,6 +47,9 @@ namespace DevRun
             InputProviderSingleMono.Instance.OnMoveLeft.Subscribe(pressed => MoveLeft(pressed)).AddTo(this);
             InputProviderSingleMono.Instance.OnMoveRight.Subscribe(pressed => MoveRight(pressed)).AddTo(this);
             InputProviderSingleMono.Instance.OnAction.Subscribe(pressed => OnAction(pressed)).AddTo(this);
+
+            _nodeView.OnCollectableCollision
+                .Subscribe(collectable => OnCollectableCollision(collectable)).AddTo(this);
         }
 
         public void Setup()
@@ -53,17 +69,18 @@ namespace DevRun
                 || MergeLock
                 || InTransition
                 || InMergeEvent
-                || Blackboard.CodeCollected.Value == 0
+                || _scoreProvider.ScoreCollected.Value == 0
                 || Blackboard.GameState.Value != GameState.Running) { return; }
 
             InMergeEvent = true;
-            StreakController.Instance.Clear();
             MergeEventController.Instance.Activate();
         }
 
         public void MoveRight(bool pressed)
         {
             if (InMergeEvent) { return; }
+
+            Blackboard.ActionsCounter++;
 
             if (!pressed)
             {
@@ -89,6 +106,8 @@ namespace DevRun
         public void MoveLeft(bool pressed)
         {
             if (InMergeEvent) { return; }
+
+            Blackboard.ActionsCounter++;
 
             if (!pressed)
             {
@@ -136,6 +155,10 @@ namespace DevRun
 
             _currentBranch = BranchController.Instance.Get();
             _currentBranch.Activate(transform.position);
+
+            //_onCollect?.Dispose();
+            //_onCollect = _currentBranch.StartNode.OnCollectableCollision
+            //    .Subscribe(collectable => OnCollectableCollision(collectable));
 
             do
             {
@@ -244,105 +267,92 @@ namespace DevRun
             }).AddTo(this);
         }
 
-        private void OnDestroy()
-        {
-            Cancel();
-        }
-
-        private void OnTriggerEnter2D(Collider2D collision)
+        private void OnCollectableCollision(Collectable collectable)
         {
             if (InMergeEvent) { return; }
 
-            if (collision.gameObject.CompareTag("Collectable"))
+            switch (collectable.Type)
             {
-                if (collision.gameObject.TryGetComponent<Collectable>(out var collectable))
-                {
-                    switch (collectable.Type)
-                    {
-                        case CollectableType.Bug:
-                            if (IsShielded || GodMode) break;
-                            Blackboard.BugsCollected.Value++;
-                            OnNegativeEffect(collectable);
-                            break;
+                case CollectableType.Bug:
+                    if (IsShielded || GodMode) break;
+                    Blackboard.BugsCollected.Value++;
+                    OnNegativeEffect(collectable);
+                    break;
 
-                        case CollectableType.Fix:
-                            var value = Blackboard.BugsCollected.Value - 1;
-                            if (value < 0) value = 0;
-                            Blackboard.BugsCollected.Value = value;
-                            Blackboard.OnBuffPickUp.Execute();
-                            break;
+                case CollectableType.Fix:
+                    var value = Blackboard.BugsCollected.Value - 1;
+                    if (value < 0) value = 0;
+                    Blackboard.BugsCollected.Value = value;
+                    Blackboard.OnBuffPickUp.Execute();
+                    break;
 
-                        case CollectableType.Code:
-                            Blackboard.CodeCollected.Value += 1 * Blackboard.StreakModifier.Value;
-                            Blackboard.StreakCount.Value++;
-                            var text = _textPool.Take().GetComponent<CollectableText>();
-                            text.transform.position = collectable.transform.position;// + Vector3.up * .5f;
-                            text.Animate("+" + (1 * Blackboard.StreakModifier.Value).ToString(), 1f, BranchesColorIndex.Yellow);
-                            Blackboard.OnGoodPickUp.Execute();
-                            break;
+                case CollectableType.Code:
+                    var pointsAmount = Mathf.RoundToInt(10); //TODO
+                    _scoreCounter.Add(pointsAmount);
+                    var text = _textPool.Take().GetComponent<CollectableText>();
+                    text.transform.position = collectable.transform.position;
+                    text.Animate($"+{pointsAmount}", 1f, BranchesColorIndex.Yellow);
+                    Blackboard.OnGoodPickUp.Execute();
+                    break;
 
-                        case CollectableType.Death:
-                            if (IsShielded || GodMode) break;
-                            CameraShakeController.Instance.DoShake(0);
-                            StreakController.Instance.Clear();
-                            GameController.Instance.EndGame();
-                            break;
+                case CollectableType.Death:
+                    if (IsShielded || GodMode) break;
+                    CameraShakeController.Instance.DoShake(0);
+                    GameController.Instance.EndGame();
+                    break;
 
-                        case CollectableType.Cofee:
-                            TempEffectsController.Instance.Activate(CollectableType.Cofee);
-                            Blackboard.OnBuffPickUp.Execute();
-                            break;
+                case CollectableType.Cofee:
+                    TempEffectsController.Instance.Activate(CollectableType.Cofee);
+                    Blackboard.OnBuffPickUp.Execute();
+                    break;
 
-                        case CollectableType.Energy:
-                            TempEffectsController.Instance.Activate(CollectableType.Energy);
-                            Blackboard.OnBuffPickUp.Execute();
-                            break;
+                case CollectableType.Energy:
+                    TempEffectsController.Instance.Activate(CollectableType.Energy);
+                    Blackboard.OnBuffPickUp.Execute();
+                    break;
 
-                        case CollectableType.Shield:
-                            TempEffectsController.Instance.Activate(CollectableType.Shield);
-                            Blackboard.OnBuffPickUp.Execute();
-                            break;
+                case CollectableType.Shield:
+                    TempEffectsController.Instance.Activate(CollectableType.Shield);
+                    Blackboard.OnBuffPickUp.Execute();
+                    break;
 
-                        case CollectableType.ControlVirus:
-                            if (IsShielded) break;
-                            TempEffectsController.Instance.Activate(CollectableType.ControlVirus);
-                            OnNegativeEffect(collectable);
-                            break;
+                case CollectableType.ControlVirus:
+                    if (IsShielded) break;
+                    TempEffectsController.Instance.Activate(CollectableType.ControlVirus);
+                    OnNegativeEffect(collectable);
+                    break;
 
-                        case CollectableType.TransitionSpeedVirus:
-                            if (IsShielded) break;
-                            TempEffectsController.Instance.Activate(CollectableType.TransitionSpeedVirus);
-                            OnNegativeEffect(collectable);
-                            break;
+                case CollectableType.TransitionSpeedVirus:
+                    if (IsShielded) break;
+                    TempEffectsController.Instance.Activate(CollectableType.TransitionSpeedVirus);
+                    OnNegativeEffect(collectable);
+                    break;
 
-                        case CollectableType.MergeLockVirus:
-                            if (IsShielded) break;
-                            TempEffectsController.Instance.Activate(CollectableType.MergeLockVirus);
-                            OnNegativeEffect(collectable);
-                            break;
-                    }
-
-                    collectable.Collect();
-                }
+                case CollectableType.MergeLockVirus:
+                    if (IsShielded) break;
+                    TempEffectsController.Instance.Activate(CollectableType.MergeLockVirus);
+                    OnNegativeEffect(collectable);
+                    break;
             }
+
+            collectable.Collect();
 
             void OnNegativeEffect(Collectable collectable)
             {
                 Blackboard.OnBadPickUp.Execute();
 
                 CameraShakeController.Instance.DoShake(0);
-                StreakController.Instance.Clear();
 
-                var codeLossAmount = Mathf.RoundToInt(Blackboard.CodeCollected.Value * Blackboard.CodeLossModifier.Value);
+                var codeLossAmount = Mathf.RoundToInt(_scoreProvider.ScoreCollected.Value * Blackboard.CodeLossModifier.Value);
 
-                if (codeLossAmount == 0 && Blackboard.CodeCollected.Value > 0)
+                if (codeLossAmount == 0 && _scoreProvider.ScoreCollected.Value > 0)
                 {
-                    codeLossAmount = Blackboard.CodeCollected.Value;
-                    Blackboard.CodeCollected.Value = 0;
+                    codeLossAmount = _scoreProvider.ScoreCollected.Value;
+                    _scoreCounter.ClearCollected();
                 }
                 else
                 {
-                    Blackboard.CodeCollected.Value -= codeLossAmount;
+                    _scoreCounter.Subtract(codeLossAmount);
                 }
 
                 if (codeLossAmount > 0)
@@ -353,6 +363,118 @@ namespace DevRun
                 }
             }
         }
+
+        private void OnDestroy()
+        {
+            Cancel();
+        }
+
+        //private void OnTriggerEnter2D(Collider2D collision)
+        //{
+        //    if (InMergeEvent) { return; }
+
+        //    if (collision.gameObject.CompareTag("Collectable"))
+        //    {
+        //        if (collision.gameObject.TryGetComponent<Collectable>(out var collectable))
+        //        {
+        //            switch (collectable.Type)
+        //            {
+        //                case CollectableType.Bug:
+        //                    if (IsShielded || GodMode) break;
+        //                    Blackboard.BugsCollected.Value++;
+        //                    OnNegativeEffect(collectable);
+        //                    break;
+
+        //                case CollectableType.Fix:
+        //                    var value = Blackboard.BugsCollected.Value - 1;
+        //                    if (value < 0) value = 0;
+        //                    Blackboard.BugsCollected.Value = value;
+        //                    Blackboard.OnBuffPickUp.Execute();
+        //                    break;
+
+        //                case CollectableType.Code:
+        //                    var pointsAmount = Mathf.RoundToInt(10 * Blackboard.StreakModifier.Value);
+        //                    _scoreCounter.Add(pointsAmount);
+        //                    //Blackboard.CodeCollected.Value += pointsAmount;
+        //                    //Blackboard.StreakCount.Value++;
+        //                    var text = _textPool.Take().GetComponent<CollectableText>();
+        //                    text.transform.position = collectable.transform.position;// + Vector3.up * .5f;
+        //                    text.Animate($"+{pointsAmount}", 1f, BranchesColorIndex.Yellow);
+        //                    Blackboard.OnGoodPickUp.Execute();
+        //                    break;
+
+        //                case CollectableType.Death:
+        //                    if (IsShielded || GodMode) break;
+        //                    CameraShakeController.Instance.DoShake(0);
+        //                    StreakController.Instance.Clear();
+        //                    GameController.Instance.EndGame();
+        //                    break;
+
+        //                case CollectableType.Cofee:
+        //                    TempEffectsController.Instance.Activate(CollectableType.Cofee);
+        //                    Blackboard.OnBuffPickUp.Execute();
+        //                    break;
+
+        //                case CollectableType.Energy:
+        //                    TempEffectsController.Instance.Activate(CollectableType.Energy);
+        //                    Blackboard.OnBuffPickUp.Execute();
+        //                    break;
+
+        //                case CollectableType.Shield:
+        //                    TempEffectsController.Instance.Activate(CollectableType.Shield);
+        //                    Blackboard.OnBuffPickUp.Execute();
+        //                    break;
+
+        //                case CollectableType.ControlVirus:
+        //                    if (IsShielded) break;
+        //                    TempEffectsController.Instance.Activate(CollectableType.ControlVirus);
+        //                    OnNegativeEffect(collectable);
+        //                    break;
+
+        //                case CollectableType.TransitionSpeedVirus:
+        //                    if (IsShielded) break;
+        //                    TempEffectsController.Instance.Activate(CollectableType.TransitionSpeedVirus);
+        //                    OnNegativeEffect(collectable);
+        //                    break;
+
+        //                case CollectableType.MergeLockVirus:
+        //                    if (IsShielded) break;
+        //                    TempEffectsController.Instance.Activate(CollectableType.MergeLockVirus);
+        //                    OnNegativeEffect(collectable);
+        //                    break;
+        //            }
+
+        //            collectable.Collect();
+        //        }
+        //    }
+
+        //    void OnNegativeEffect(Collectable collectable)
+        //    {
+        //        Blackboard.OnBadPickUp.Execute();
+
+        //        CameraShakeController.Instance.DoShake(0);
+        //        StreakController.Instance.Clear();
+
+        //        var codeLossAmount = Mathf.RoundToInt(_scoreProvider.ScoreCollected.Value * Blackboard.CodeLossModifier.Value);
+
+        //        if (codeLossAmount == 0 && _scoreProvider.ScoreCollected.Value > 0)
+        //        {
+        //            codeLossAmount = _scoreProvider.ScoreCollected.Value;
+        //            _scoreCounter.ClearCollected();
+        //        }
+        //        else
+        //        {
+        //            _scoreCounter.Subtract(codeLossAmount);
+        //        }
+
+        //        if (codeLossAmount > 0)
+        //        {
+        //            var text = _textPool.Take().GetComponent<CollectableText>();
+        //            text.transform.position = collectable.transform.position;// + Vector3.up * .5f;
+        //            text.Animate("-" + codeLossAmount.ToString(), 1f, BranchesColorIndex.Red);
+        //        }
+        //    }
+        //}
 
         private enum TransitionDirection
         {

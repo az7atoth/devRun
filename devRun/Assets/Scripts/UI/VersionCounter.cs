@@ -10,7 +10,7 @@ namespace DevRun
 
         private void Awake()
         {
-            Blackboard.Version.Subscribe(value =>
+            Blackboard.Level.Subscribe(value =>
             {
                 var t1 = value / 10;
                 var t2 = value % 10;
