@@ -1,131 +1,133 @@
-using DevRun;
 using UnityEngine;
 using Zenject;
 using UniRx;
 using System.Text;
 
-public class SpawnPatternProvider : MonoBehaviour, IInitializable
+namespace DevRun
 {
-    [SerializeField] private PatternBasedSpawnerConfig _earlyGameConfig;
-    [SerializeField] private PatternBasedSpawnerConfig _midGameConfig;
-    [SerializeField] private PatternBasedSpawnerConfig _lateGameConfig;
-
-    [SerializeField] private int _midGameLevel;
-    [SerializeField] private int _lateGameLevel;
-
-    private GamePhase _currentPhase;
-
-    private SpawnPatternData[] _earlyPatterns;
-    private SpawnPatternData[] _midPatterns;
-    private SpawnPatternData[] _latePatterns;
-
-    private int _lastPatternId;
-    private StringBuilder _sb = new StringBuilder(25);
-
-    public void Initialize()
+    public class SpawnPatternProvider : MonoBehaviour, IInitializable
     {
-        _earlyPatterns = ProcessConfig(_earlyGameConfig);
-        _midPatterns = ProcessConfig(_midGameConfig);
-        _latePatterns = ProcessConfig(_lateGameConfig);
+        [SerializeField] private PatternBasedSpawnerConfig _earlyGameConfig;
+        [SerializeField] private PatternBasedSpawnerConfig _midGameConfig;
+        [SerializeField] private PatternBasedSpawnerConfig _lateGameConfig;
 
-        Blackboard.Level.SkipLatestValueOnSubscribe()
-            .Subscribe(version => DefineGamePhase(version)).AddTo(this); //TODO
-    }
+        [SerializeField] private int _midGameLevel;
+        [SerializeField] private int _lateGameLevel;
 
-    public string GetPattern(int lineLength)
-    {
-        SpawnPatternData[] patternsPool;
+        private GamePhase _currentPhase;
 
-        switch (_currentPhase)
+        private SpawnPatternData[] _earlyPatterns;
+        private SpawnPatternData[] _midPatterns;
+        private SpawnPatternData[] _latePatterns;
+
+        private int _lastPatternId;
+        private StringBuilder _sb = new StringBuilder(25);
+
+        public void Initialize()
         {
-            case GamePhase.Middle:
-                patternsPool = _midPatterns;
-                break;
+            _earlyPatterns = ProcessConfig(_earlyGameConfig);
+            _midPatterns = ProcessConfig(_midGameConfig);
+            _latePatterns = ProcessConfig(_lateGameConfig);
 
-            case GamePhase.Late:
-                patternsPool = _latePatterns;
-                break;
-
-            default:
-                patternsPool = _earlyPatterns;
-                break;
+            Blackboard.Level.SkipLatestValueOnSubscribe()
+                .Subscribe(version => DefineGamePhase(version)).AddTo(this); //TODO
         }
 
-        var rnd = Random.Range(0, patternsPool.Length);
-
-        if (patternsPool.Length > 1)
+        public string GetPattern(int lineLength)
         {
-            while (rnd == _lastPatternId)
+            SpawnPatternData[] patternsPool;
+
+            switch (_currentPhase)
             {
-                rnd = Random.Range(0, patternsPool.Length);
+                case GamePhase.Middle:
+                    patternsPool = _midPatterns;
+                    break;
+
+                case GamePhase.Late:
+                    patternsPool = _latePatterns;
+                    break;
+
+                default:
+                    patternsPool = _earlyPatterns;
+                    break;
             }
+
+            var rnd = Random.Range(0, patternsPool.Length);
+
+            if (patternsPool.Length > 1)
+            {
+                while (rnd == _lastPatternId)
+                {
+                    rnd = Random.Range(0, patternsPool.Length);
+                }
+            }
+
+            _lastPatternId = rnd;
+
+            var pattern = patternsPool[rnd];
+
+            _sb.Clear();
+
+            for (int i = 0; i < pattern.Lines.Length; i++)
+            {
+                var line = pattern.Lines[i];
+
+                if (line.Length >= lineLength)
+                {
+                    _sb.Append(line, 0, lineLength);
+                }
+                else
+                {
+                    var difference = lineLength - line.Length;
+                    _sb.Append(line);
+                    _sb.Append('.', difference);
+                }
+            }
+
+            return _sb.ToString();
         }
 
-        _lastPatternId = rnd;
-
-        var pattern = patternsPool[rnd];
-
-        _sb.Clear();
-
-        for (int i = 0; i < pattern.Lines.Length; i++)
+        private class SpawnPatternData
         {
-            var line = pattern.Lines[i];
+            public string[] Lines;
+        }
 
-            if (line.Length >= lineLength)
+        public void DefineGamePhase(int level)
+        {
+            if (level < _midGameLevel)
             {
-                _sb.Append(line, 0, lineLength);
+                _currentPhase = GamePhase.Early;
+            }
+            else if (level >= _midGameLevel && level < _lateGameLevel)
+            {
+                _currentPhase = GamePhase.Middle;
             }
             else
             {
-                var difference = lineLength - line.Length;
-                _sb.Append(line);
-                _sb.Append('.', difference);
+                _currentPhase = GamePhase.Late;
             }
         }
 
-        return _sb.ToString();
-    }
-
-    private class SpawnPatternData
-    {
-        public string[] Lines;
-    }
-
-    public void DefineGamePhase(int level)
-    {
-        if (level < _midGameLevel)
+        private SpawnPatternData[] ProcessConfig(PatternBasedSpawnerConfig config)
         {
-            _currentPhase = GamePhase.Early;
-        }
-        else if (level >= _midGameLevel && level < _lateGameLevel)
-        {
-            _currentPhase = GamePhase.Middle;
-        }
-        else
-        {
-            _currentPhase = GamePhase.Late;
-        }
-    }
+            var configs = config.GetConfigs();
 
-    private SpawnPatternData[] ProcessConfig(PatternBasedSpawnerConfig config)
-    {
-        var configs = config.GetConfigs();
+            var result = new SpawnPatternData[configs.Length];
 
-        var result = new SpawnPatternData[configs.Length];
+            for (int i = 0; i < configs.Length; i++)
+            {
+                result[i] = new SpawnPatternData();
+                result[i].Lines = configs[i].GetLines();
+            }
 
-        for (int i = 0; i < configs.Length; i++)
-        {
-            result[i] = new SpawnPatternData();
-            result[i].Lines = configs[i].GetLines();
+            return result;
         }
 
-        return result;
-    }
-
-    private enum GamePhase
-    {
-        Early,
-        Middle,
-        Late
-    }
+        private enum GamePhase
+        {
+            Early,
+            Middle,
+            Late
+        }
+    } 
 }

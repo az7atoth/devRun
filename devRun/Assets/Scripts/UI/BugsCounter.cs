@@ -1,34 +1,36 @@
 using UnityEngine;
 using UniRx;
-using DevRun;
 
-public class BugsCounter : MonoBehaviour
+namespace DevRun
 {
-    [SerializeField] private BugIcon[] _bugObjects;
-
-    private void Awake()
+    public class BugsCounter : MonoBehaviour
     {
-        Blackboard.BugsCollected.Subscribe(value => SetBugsActive(value)).AddTo(this);
-        Blackboard.BugLimit.Subscribe(value => SetBugsLimit(value)).AddTo(this);
-    }
+        [SerializeField] private BugIcon[] _bugObjects;
 
-    private void SetBugsLimit(int value)
-    {
-        if (value >= _bugObjects.Length) return;
-
-        for (int i = 0; i < _bugObjects.Length; i++)
+        private void Awake()
         {
-            _bugObjects[i].gameObject.SetActive(i < value);
+            Blackboard.BugsCollected.Subscribe(value => SetBugsActive(value)).AddTo(this);
+            Blackboard.BugLimit.Subscribe(value => SetBugsLimit(value)).AddTo(this);
         }
-    }
 
-    private void SetBugsActive(int value)
-    {
-        if (value >= _bugObjects.Length) return;
-
-        for (int i = 0; i < _bugObjects.Length; i++)
+        private void SetBugsLimit(int value)
         {
-            _bugObjects[i].SetActive(i < value);
+            if (value >= _bugObjects.Length) return;
+
+            for (int i = 0; i < _bugObjects.Length; i++)
+            {
+                _bugObjects[i].gameObject.SetActive(i < value);
+            }
         }
-    }
+
+        private void SetBugsActive(int value)
+        {
+            if (value >= _bugObjects.Length) return;
+
+            for (int i = 0; i < _bugObjects.Length; i++)
+            {
+                _bugObjects[i].SetActive(i < value);
+            }
+        }
+    } 
 }

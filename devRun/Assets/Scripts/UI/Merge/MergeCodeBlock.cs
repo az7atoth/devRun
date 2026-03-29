@@ -1,33 +1,35 @@
-using DevRun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MergeCodeBlock : MonoBehaviour
+namespace DevRun
 {
-    [SerializeField] private Image _image;
-    [SerializeField] private Sprite[] _sprites;
-
-    public void Activate(BranchesColorIndex colorIndex)
+    public class MergeCodeBlock : MonoBehaviour
     {
-        SetRandomSprite();
-        SetSpriteColor(colorIndex);
-    }
+        [SerializeField] private Image _image;
+        [SerializeField] private Sprite[] _sprites;
 
-    public void Select()
-    {
-        var color = _image.color;
-        color.a = .2f;
-        _image.color = color;
-    }
+        public void Activate(BranchesColorIndex colorIndex)
+        {
+            SetRandomSprite();
+            SetSpriteColor(colorIndex);
+        }
 
-    private void SetRandomSprite()
-    {
-        var rnd = Random.Range(0, _sprites.Length);
-        _image.sprite = _sprites[rnd];
-    }
+        public void Select()
+        {
+            var color = _image.color;
+            color.a = .2f;
+            _image.color = color;
+        }
 
-    private void SetSpriteColor(BranchesColorIndex index)
-    {
-        _image.color = ColorProvider.Instance.Get(index);
-    }
+        private void SetRandomSprite()
+        {
+            var rnd = Random.Range(0, _sprites.Length);
+            _image.sprite = _sprites[rnd];
+        }
+
+        private void SetSpriteColor(BranchesColorIndex index)
+        {
+            _image.color = ColorProvider.Instance.Get(index);
+        }
+    } 
 }

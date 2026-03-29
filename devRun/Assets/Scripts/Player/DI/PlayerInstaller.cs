@@ -1,13 +1,15 @@
-using DevRun;
 using UnityEngine;
 using Zenject;
 
-public class PlayerInstaller : MonoInstaller
+namespace DevRun
 {
-    [SerializeField] private PlayerController _playerController;
-
-    public override void InstallBindings()
+    public class PlayerInstaller : MonoInstaller
     {
-        Container.BindInterfacesAndSelfTo<PlayerController>().FromInstance(_playerController);
-    }
+        [SerializeField] private PlayerController _playerController;
+
+        public override void InstallBindings()
+        {
+            Container.BindInterfacesAndSelfTo<PlayerController>().FromInstance(_playerController);
+        }
+    } 
 }

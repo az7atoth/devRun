@@ -108,9 +108,6 @@ namespace DevRun
             _scoreCounter.ClearCollected();
             _scoreCounter.ClearStored();
             _scoreCounter.UpdateRequestedScore(Blackboard.Level.Value);
-            //Blackboard.CodeCollected.Value = 0;
-            //Blackboard.CodeStored.Value = 0;
-            //required is calculated
 
             //stats
             Blackboard.TransitionSpeed.Value = 1f;
@@ -175,26 +172,6 @@ namespace DevRun
                 }
             }).AddTo(this);
         }
-
-
-        //private void Update()
-        //{
-        //    if (Input.GetKeyDown(KeyCode.F5))
-        //    {
-        //        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        //    }
-
-        //    if (Input.GetKeyDown(KeyCode.F6))
-        //    {
-        //        GameSpeedController.Instance.SetSpeed(Blackboard.MovementSpeed.Value - 1f);
-        //    }
-
-        //    if (Input.GetKeyDown(KeyCode.F7))
-        //    {
-        //        GameSpeedController.Instance.SetSpeed(Blackboard.MovementSpeed.Value + 1f);
-        //    }
-        //}
-
 
     }
 }

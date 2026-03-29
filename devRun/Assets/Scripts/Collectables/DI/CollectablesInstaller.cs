@@ -1,15 +1,17 @@
-using DevRun;
 using UnityEngine;
 using Zenject;
 
-public class CollectablesInstaller : MonoInstaller
+namespace DevRun
 {
-    [SerializeField] private PatternBasedSpawner _collectablesSpawner;
-    [SerializeField] private SpawnPatternProvider _spawnPatternProvider;
-
-    public override void InstallBindings()
+    public class CollectablesInstaller : MonoInstaller
     {
-        Container.BindInterfacesAndSelfTo<ICollectablesSpawner>().FromInstance(_collectablesSpawner).AsSingle();
-        Container.BindInterfacesAndSelfTo<SpawnPatternProvider>().FromInstance(_spawnPatternProvider).AsSingle();
-    }
+        [SerializeField] private PatternBasedSpawner _collectablesSpawner;
+        [SerializeField] private SpawnPatternProvider _spawnPatternProvider;
+
+        public override void InstallBindings()
+        {
+            Container.BindInterfacesAndSelfTo<ICollectablesSpawner>().FromInstance(_collectablesSpawner).AsSingle();
+            Container.BindInterfacesAndSelfTo<SpawnPatternProvider>().FromInstance(_spawnPatternProvider).AsSingle();
+        }
+    } 
 }

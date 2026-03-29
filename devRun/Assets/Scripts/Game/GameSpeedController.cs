@@ -5,138 +5,141 @@ using System.Threading;
 using UnityEngine;
 using UniRx;
 
-public class GameSpeedController : MonoBehaviour
+namespace DevRun
 {
-    public static GameSpeedController Instance { get; private set; }
-
-    public float MovementSpeedRatio => Blackboard.MovementSpeed.Value / _minSpeed;
-
-    [SerializeField] private float _minSpeed;
-    [SerializeField] private float _maxSpeed;
-    [SerializeField] private AnimationCurve _speedCurve;
-    [SerializeField] private float _defaultTransitionTime = .3f;
-
-    private CancellationTokenSource _ratioCts;
-    private CancellationTokenSource _ratioModCts;
-
-    public void Setup()
+    public class GameSpeedController : MonoBehaviour
     {
-        Blackboard.MovementSpeed.Value = _minSpeed;
-        Blackboard.GameSpeedRatio.Value = 1f;
-        Blackboard.GameSpeedRatioModifier.Value = 1f;
-    }
+        public static GameSpeedController Instance { get; private set; }
 
-    public void SetSpeed(float speed)
-    {
-        speed = Mathf.Clamp(speed, _minSpeed, _maxSpeed);
-        Blackboard.MovementSpeed.Value = speed;
-    }
+        public float MovementSpeedRatio => Blackboard.MovementSpeed.Value / _minSpeed;
 
-    public void SetRatio(float ratio, float transitionTime = 0f)
-    {
-        CancelRatio();
-        _ratioCts = new();
-        SetRatioAsync(ratio, transitionTime, _ratioCts.Token).Forget();
-    }
+        [SerializeField] private float _minSpeed;
+        [SerializeField] private float _maxSpeed;
+        [SerializeField] private AnimationCurve _speedCurve;
+        [SerializeField] private float _defaultTransitionTime = .3f;
 
-    public void SetRatioModifier(float ratio, float transitionTime = 0f)
-    {
-        CancelRatioMod();
-        _ratioModCts = new();
-        SetRatioModAsync(ratio, transitionTime, _ratioModCts.Token).Forget();
-    }
+        private CancellationTokenSource _ratioCts;
+        private CancellationTokenSource _ratioModCts;
 
-    public async UniTask SetRatioAsync(float ratio, float transitionTime, CancellationToken token)
-    {
-        ratio = Mathf.Clamp01(ratio);
-
-        if (transitionTime == 0f)
+        public void Setup()
         {
-            transitionTime = _defaultTransitionTime;
+            Blackboard.MovementSpeed.Value = _minSpeed;
+            Blackboard.GameSpeedRatio.Value = 1f;
+            Blackboard.GameSpeedRatioModifier.Value = 1f;
         }
 
-        var startValue = Blackboard.GameSpeedRatio.Value;
-
-        var t = 0f;
-        var time = 0f;
-
-        while (t < 1f)
+        public void SetSpeed(float speed)
         {
-            t = time / transitionTime;
-            t = EaseFunctions.EaseInOutCubic(t);
-            Blackboard.GameSpeedRatio.Value = Mathf.Lerp(startValue, ratio, t);
-
-            await UniTask.Yield();
-            if (token.IsCancellationRequested) return;
-
-            time += Time.deltaTime;
+            speed = Mathf.Clamp(speed, _minSpeed, _maxSpeed);
+            Blackboard.MovementSpeed.Value = speed;
         }
 
-        Blackboard.GameSpeedRatio.Value = ratio;
-    }
-
-    public async UniTask SetRatioModAsync(float ratio, float transitionTime, CancellationToken token)
-    {
-        if (transitionTime == 0f)
+        public void SetRatio(float ratio, float transitionTime = 0f)
         {
-            transitionTime = _defaultTransitionTime;
+            CancelRatio();
+            _ratioCts = new();
+            SetRatioAsync(ratio, transitionTime, _ratioCts.Token).Forget();
         }
 
-        var startValue = Blackboard.GameSpeedRatioModifier.Value;
-
-        var t = 0f;
-        var time = 0f;
-
-        while (t < 1f)
+        public void SetRatioModifier(float ratio, float transitionTime = 0f)
         {
-            t = time / transitionTime;
-            t = EaseFunctions.EaseInOutCubic(t);
-            Blackboard.GameSpeedRatioModifier.Value = Mathf.Lerp(startValue, ratio, t);
-
-            await UniTask.Yield();
-            if (token.IsCancellationRequested) return;
-
-            time += Time.deltaTime;
+            CancelRatioMod();
+            _ratioModCts = new();
+            SetRatioModAsync(ratio, transitionTime, _ratioModCts.Token).Forget();
         }
 
-        Blackboard.GameSpeedRatioModifier.Value = ratio;
-    }
-
-    private void CancelRatio()
-    {
-        _ratioCts?.Cancel();
-        _ratioCts?.Dispose();
-        _ratioCts = null;
-    }
-
-    private void CancelRatioMod()
-    {
-        _ratioModCts?.Cancel();
-        _ratioModCts?.Dispose();
-        _ratioModCts = null;
-    }
-
-    private void Awake()
-    {
-        if (Instance == null)
+        public async UniTask SetRatioAsync(float ratio, float transitionTime, CancellationToken token)
         {
-            Instance = this;
+            ratio = Mathf.Clamp01(ratio);
+
+            if (transitionTime == 0f)
+            {
+                transitionTime = _defaultTransitionTime;
+            }
+
+            var startValue = Blackboard.GameSpeedRatio.Value;
+
+            var t = 0f;
+            var time = 0f;
+
+            while (t < 1f)
+            {
+                t = time / transitionTime;
+                t = EaseFunctions.EaseInOutCubic(t);
+                Blackboard.GameSpeedRatio.Value = Mathf.Lerp(startValue, ratio, t);
+
+                await UniTask.Yield();
+                if (token.IsCancellationRequested) return;
+
+                time += Time.deltaTime;
+            }
+
+            Blackboard.GameSpeedRatio.Value = ratio;
         }
-        else
+
+        public async UniTask SetRatioModAsync(float ratio, float transitionTime, CancellationToken token)
         {
-            Destroy(gameObject);
+            if (transitionTime == 0f)
+            {
+                transitionTime = _defaultTransitionTime;
+            }
+
+            var startValue = Blackboard.GameSpeedRatioModifier.Value;
+
+            var t = 0f;
+            var time = 0f;
+
+            while (t < 1f)
+            {
+                t = time / transitionTime;
+                t = EaseFunctions.EaseInOutCubic(t);
+                Blackboard.GameSpeedRatioModifier.Value = Mathf.Lerp(startValue, ratio, t);
+
+                await UniTask.Yield();
+                if (token.IsCancellationRequested) return;
+
+                time += Time.deltaTime;
+            }
+
+            Blackboard.GameSpeedRatioModifier.Value = ratio;
         }
 
-        Blackboard.Difficulty.Subscribe(value =>
+        private void CancelRatio()
         {
-            Blackboard.MovementSpeed.Value = _speedCurve.Evaluate(value);
-            Debug.Log($"Set speed to: {Blackboard.MovementSpeed.Value}");
-        }).AddTo(this);
-    }
+            _ratioCts?.Cancel();
+            _ratioCts?.Dispose();
+            _ratioCts = null;
+        }
 
-    private void OnDestroy()
-    {
-        CancelRatio();
-        CancelRatioMod();
-    }
+        private void CancelRatioMod()
+        {
+            _ratioModCts?.Cancel();
+            _ratioModCts?.Dispose();
+            _ratioModCts = null;
+        }
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+
+            Blackboard.Difficulty.Subscribe(value =>
+            {
+                Blackboard.MovementSpeed.Value = _speedCurve.Evaluate(value);
+                Debug.Log($"Set speed to: {Blackboard.MovementSpeed.Value}");
+            }).AddTo(this);
+        }
+
+        private void OnDestroy()
+        {
+            CancelRatio();
+            CancelRatioMod();
+        }
+    } 
 }

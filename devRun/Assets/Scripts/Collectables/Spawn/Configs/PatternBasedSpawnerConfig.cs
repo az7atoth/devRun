@@ -1,20 +1,23 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PatternBasedSpawnerConfig", menuName = "Scriptable Objects/PatternBasedSpawnerConfig")]
-public class PatternBasedSpawnerConfig : ScriptableObject
+namespace DevRun
 {
-    [SerializeField] private SpawnPatternConfig[] _patternConfigs;
-
-    public SpawnPatternConfig[] GetConfigs()
+    [CreateAssetMenu(fileName = "PatternBasedSpawnerConfig", menuName = "Scriptable Objects/PatternBasedSpawnerConfig")]
+    public class PatternBasedSpawnerConfig : ScriptableObject
     {
-        if (_patternConfigs == null || _patternConfigs.Length == 0) return null;
+        [SerializeField] private SpawnPatternConfig[] _patternConfigs;
 
-        var result = new SpawnPatternConfig[_patternConfigs.Length];
+        public SpawnPatternConfig[] GetConfigs()
+        {
+            if (_patternConfigs == null || _patternConfigs.Length == 0) return null;
 
-        Array.Copy(_patternConfigs, result, _patternConfigs.Length);
+            var result = new SpawnPatternConfig[_patternConfigs.Length];
 
-        return result;
-    }
+            Array.Copy(_patternConfigs, result, _patternConfigs.Length);
+
+            return result;
+        }
+    } 
 }
 

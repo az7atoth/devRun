@@ -1,19 +1,22 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SpawnPattern", menuName = "Scriptable Objects/SpawnPattern")]
-public class SpawnPatternConfig : ScriptableObject
+namespace DevRun
 {
-    [SerializeField] private string[] _lines;
-
-    public string[] GetLines()
+    [CreateAssetMenu(fileName = "SpawnPattern", menuName = "Scriptable Objects/SpawnPattern")]
+    public class SpawnPatternConfig : ScriptableObject
     {
-        if (_lines == null || _lines.Length == 0) return null;
+        [SerializeField] private string[] _lines;
 
-        var result = new string[_lines.Length];
+        public string[] GetLines()
+        {
+            if (_lines == null || _lines.Length == 0) return null;
 
-        Array.Copy(_lines, result, _lines.Length);
+            var result = new string[_lines.Length];
 
-        return result;
-    }
+            Array.Copy(_lines, result, _lines.Length);
+
+            return result;
+        }
+    } 
 }

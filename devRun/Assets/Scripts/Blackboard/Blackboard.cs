@@ -18,9 +18,6 @@ namespace DevRun
 
         //collectables
         public static ReactiveProperty<int> BugsCollected { get; private set; } = new();
-//        public static ReactiveProperty<int> CodeCollected { get; private set; } = new();
-//        public static ReactiveProperty<int> CodeRequested { get; private set; } = new();
-//        public static ReactiveProperty<int> CodeStored { get; private set; } = new();
 
         //player stats
         public static ReactiveProperty<float> TransitionSpeed { get; private set; } = new();
